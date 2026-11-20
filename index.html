@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kineviz embed diagnostic</title>
+<style>
+body{margin:0;padding:1rem;font:1rem system-ui}
+iframe{display:block;width:100%;height:100vh;height:100dvh;border:0}
+</style>
+<h1>Kineviz embed diagnostic</h1>
+<p id="status">Provide a Kineviz dev share URL in the test link.</p>
+<a id="direct" hidden target="_blank" rel="noopener noreferrer">Open the share separately</a>
+<div id="preview"></div>
+<script>
+(() => {
+  try {
+    const fragment = decodeURIComponent(location.hash.slice(1));
+    if (!fragment || fragment.length > 1500) return;
+    const url = new URL(fragment);
+    if (url.origin !== 'https://dev.cloud.kineviz.com' || url.username || url.password || url.hash ||
+        !/^\/share\/[a-f0-9]{24}\/[^/]+\/[a-f0-9]{24}\/[^/]+$/i.test(url.pathname) ||
+        [...url.searchParams.keys()].some(key => !['workspace', 'theme'].includes(key))) return;
+    const direct = document.getElementById('direct');
+    direct.href = url.href;
+    direct.hidden = false;
+    document.getElementById('status').textContent = 'External parent to Kineviz dev share.';
+    const frame = document.createElement('iframe');
+    frame.title = 'Kineviz dev embed';
+    frame.referrerPolicy = 'no-referrer';
+    frame.src = url.href;
+    document.getElementById('preview').append(frame);
+  } catch {}
+})();
+</script>
+</html>
